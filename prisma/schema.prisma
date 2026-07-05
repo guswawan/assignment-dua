@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Project {
+  id             String   @id @default(uuid())
+  title          String
+  description    String
+  additionalInfo String?
+  refinedBrief   Json?
+  status         String   @default("pending") // pending | processing | done | failed
+  filePath       String?
+  createdAt      DateTime @default(now())
+
+  sections    PrdSection[]
+  consistency ConsistencyCheck[]
+}
+
+model PrdSection {
+  id          String   @id @default(uuid())
+  projectId   String
+  sectionType String // problem_statement | user_stories | acceptance_criteria | data_model | api_contract | tech_stack
+  draft       String
+  finalText   String
+  revised     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  project     Project      @relation(fields: [projectId], references: [id])
+  evaluations Evaluation[]
+}
+
+model Evaluation {
+  id           String  @id @default(uuid())
+  prdSectionId String
+  passed       Boolean
+  score        Int
+  feedback     String
+
+  section PrdSection @relation(fields: [prdSectionId], references: [id])
+}
+
+model ConsistencyCheck {
+  id           String    @id @default(uuid())
+  projectId    String
+  consistent   Boolean
+  issues       String[]
+  reconciledAt DateTime?
+  createdAt    DateTime  @default(now())
+
+  project Project @relation(fields: [projectId], references: [id])
+}

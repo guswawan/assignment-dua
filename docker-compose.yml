@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: prdgenerator
+    environment:
+      POSTGRES_USER: prdgenerator
+      POSTGRES_PASSWORD: prdgenerator
+      POSTGRES_DB: prdgenerator
+    ports:
+      - "5432:5432"
+    volumes:
+      - prdgenerator:/var/lib/postgresql/data
+
+volumes:
+  prdgenerator:
